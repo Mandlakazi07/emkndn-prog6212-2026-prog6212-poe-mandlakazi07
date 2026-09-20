@@ -1,0 +1,39 @@
+name: Docs Folder Check
+
+on:
+  push:
+    branches: [ main, part1 ]
+  pull_request:
+    branches: [ main, part1 ]
+
+jobs:
+  check-docs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Verify /docs folder and required Part 1 files exist
+        run: |
+          echo "Checking for /docs folder..."
+          test -d docs || (echo "::error::docs folder is missing" && exit 1)
+
+          echo "Checking for ERD image..."
+          if ! ls docs/*.png 1> /dev/null 2>&1; then
+            echo "::error::No .png ERD file found in /docs"
+            exit 1
+          fi
+
+          echo "Checking for SQL script..."
+          if ! ls docs/*.sql 1> /dev/null 2>&1; then
+            echo "::error::No .sql file found in /docs"
+            exit 1
+          fi
+
+          echo "Checking for endpoint plan (docx or pdf)..."
+          if ! ls docs/*.docx docs/*.pdf 1> /dev/null 2>&1; then
+            echo "::error::No endpoint plan (.docx or .pdf) found in /docs"
+            exit 1
+          fi
+
+          echo "All required Part 1 documents are present in /docs."
