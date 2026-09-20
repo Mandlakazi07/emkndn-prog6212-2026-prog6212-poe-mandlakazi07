@@ -31,7 +31,9 @@ jobs:
           fi
 
           echo "Checking for endpoint plan (docx or pdf)..."
-          if ! ls docs/*.docx docs/*.pdf 1> /dev/null 2>&1; then
+          if ls docs/*.docx 1> /dev/null 2>&1 || ls docs/*.pdf 1> /dev/null 2>&1; then
+            echo "Endpoint plan found."
+          else
             echo "::error::No endpoint plan (.docx or .pdf) found in /docs"
             exit 1
           fi
