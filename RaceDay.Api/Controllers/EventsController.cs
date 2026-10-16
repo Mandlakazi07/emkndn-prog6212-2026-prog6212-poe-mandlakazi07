@@ -51,7 +51,7 @@ public class EventsController : ControllerBase
     };
 
     /// <summary>
-    /// Lists upcoming events. Optional filters: eventType (Run/Walk/Cycle), city, includePast.
+    /// Lists upcoming events. Optional filters: eventType (Run/Walk/Cycle), city, fromDate, toDate, includePast.
     /// An Organizer can pass mine=true to see all of their own events, past ones included.
     /// </summary>
     [HttpGet]
@@ -61,6 +61,8 @@ public class EventsController : ControllerBase
     public async Task<IActionResult> GetEvents(
         [FromQuery] string? eventType,
         [FromQuery] string? city,
+        [FromQuery] DateOnly? fromDate,
+        [FromQuery] DateOnly? toDate,
         [FromQuery] bool includePast = false,
         [FromQuery] bool mine = false)
     {
@@ -83,6 +85,15 @@ public class EventsController : ControllerBase
         {
             var today = DateOnly.FromDateTime(DateTime.Today);
             query = query.Where(e => e.EventDate >= today);
+        }
+
+        if (fromDate is not null)
+        {
+            query = query.Where(e => e.EventDate >= fromDate.Value);
+        }
+        if (toDate is not null)
+        {
+            query = query.Where(e => e.EventDate <= toDate.Value);
         }
 
         if (!string.IsNullOrWhiteSpace(eventType))
