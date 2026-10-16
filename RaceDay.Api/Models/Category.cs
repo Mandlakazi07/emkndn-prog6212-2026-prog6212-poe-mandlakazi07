@@ -3,7 +3,7 @@
 // Institution: The Independent Institute of Education (IIE)
 // Date:        16 October 2026
 // AI use:      Claude (Anthropic) helped draft and explain this file. Reviewed and understood by the student.
-// Reference:   Microsoft Learn, n.d. Relationships - EF Core. [online] Available at:
+// Reference:   Microsoft Learn, 2023. Introduction to relationships - EF Core. [online] Available at:
 //              https://learn.microsoft.com/en-us/ef/core/modeling/relationships [Accessed 16 October 2026].
 
 using System.ComponentModel.DataAnnotations;

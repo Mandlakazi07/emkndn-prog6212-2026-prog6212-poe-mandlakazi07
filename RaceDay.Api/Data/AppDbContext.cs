@@ -3,8 +3,8 @@
 // Institution: The Independent Institute of Education (IIE)
 // Date:        16 October 2026
 // AI use:      Claude (Anthropic) helped draft and explain this file. Reviewed and understood by the student.
-// Reference:   Microsoft Learn, n.d. Check constraints - EF Core. [online] Available at:
-//              https://learn.microsoft.com/en-us/ef/core/modeling/constraints [Accessed 16 October 2026].
+// Reference:   Microsoft Learn, n.d. TableBuilder.HasCheckConstraint(String, String) Method. [online] Available at:
+//              https://learn.microsoft.com/en-gb/dotnet/api/microsoft.entityframeworkcore.metadata.builders.tablebuilder.hascheckconstraint?view=efcore-10.0 [Accessed 16 October 2026].
 
 using Microsoft.EntityFrameworkCore;
 using RaceDay.Api.Models;
