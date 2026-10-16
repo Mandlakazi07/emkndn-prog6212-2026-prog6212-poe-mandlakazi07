@@ -3,8 +3,10 @@
 // Institution: The Independent Institute of Education (IIE)
 // Date:        16 October 2026
 // AI use:      Claude (Anthropic) helped draft and explain this file. Reviewed and understood by the student.
-// Reference:   Microsoft Learn, n.d. Session and state management in ASP.NET Core. [online] Available at:
+// References:  Microsoft Learn, n.d. Session and state management in ASP.NET Core. [online] Available at:
 //              https://learn.microsoft.com/aspnet/core/fundamentals/app-state [Accessed 16 October 2026].
+//              Microsoft Learn, n.d. Get started with Swashbuckle and ASP.NET Core. [online] Available at:
+//              https://learn.microsoft.com/aspnet/core/tutorials/getting-started-with-swashbuckle [Accessed 16 October 2026].
 
 using Microsoft.EntityFrameworkCore;
 using RaceDay.Api.Data;
@@ -27,7 +29,7 @@ builder.Services.AddSession(options =>
 
 // Add services to the container.
 builder.Services.AddControllers();
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+// Built-in OpenAPI: generates the machine-readable description of every endpoint
 builder.Services.AddOpenApi();
 
 var app = builder.Build();
@@ -36,6 +38,13 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
+
+    // Swagger UI: an interactive page for reading and testing every endpoint in the browser
+    app.UseSwaggerUI(options =>
+    {
+        options.SwaggerEndpoint("/openapi/v1.json", "RaceDay API v1");
+        options.RoutePrefix = "swagger";
+    });
 }
 
 app.UseHttpsRedirection();
