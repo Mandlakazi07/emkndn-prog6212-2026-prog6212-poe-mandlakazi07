@@ -6,6 +6,7 @@
 // Reference:   Microsoft Learn, 2023. Introduction to relationships - EF Core. [online] Available at:
 //              https://learn.microsoft.com/en-us/ef/core/modeling/relationships [Accessed 16 October 2026].
 
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RaceDay.Api.Data;
@@ -46,7 +47,7 @@ public class ResultsController : ControllerBase
 
     /// <summary>Records a finish time and position for an enrollment, after the event. Only the event's Organizer can do this.</summary>
     [HttpPost("results")]
-    [SessionAuthorize("Organizer")]
+    [Authorize(Roles = "Organizer")]
     [ProducesResponseType(typeof(ResultResponse), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -99,7 +100,7 @@ public class ResultsController : ControllerBase
 
     /// <summary>Returns the logged-in Participant's own race history, newest event first.</summary>
     [HttpGet("results/me")]
-    [SessionAuthorize("Participant")]
+    [Authorize(Roles = "Participant")]
     [ProducesResponseType(typeof(List<ResultResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -117,7 +118,7 @@ public class ResultsController : ControllerBase
 
     /// <summary>Lists every result recorded for one event, in finishing order. Only that event's Organizer can see this.</summary>
     [HttpGet("events/{eventId:int}/results")]
-    [SessionAuthorize("Organizer")]
+    [Authorize(Roles = "Organizer")]
     [ProducesResponseType(typeof(List<ResultResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]

@@ -6,6 +6,7 @@
 // Reference:   Microsoft Learn, n.d. Session and state management in ASP.NET Core. [online] Available at:
 //              https://learn.microsoft.com/aspnet/core/fundamentals/app-state [Accessed 16 October 2026].
 
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RaceDay.Api.Data;
@@ -37,7 +38,7 @@ public class UsersController : ControllerBase
 
     /// <summary>Returns the logged-in user's own profile.</summary>
     [HttpGet("me")]
-    [SessionAuthorize]
+    [Authorize]
     [ProducesResponseType(typeof(UserResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -51,7 +52,7 @@ public class UsersController : ControllerBase
 
     /// <summary>Updates the logged-in user's own name and email. The role cannot be changed.</summary>
     [HttpPut("me")]
-    [SessionAuthorize]
+    [Authorize]
     [ProducesResponseType(typeof(UserResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]

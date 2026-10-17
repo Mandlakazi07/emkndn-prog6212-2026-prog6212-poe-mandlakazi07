@@ -6,6 +6,7 @@
 // Reference:   Microsoft Learn, 2023. Introduction to relationships - EF Core. [online] Available at:
 //              https://learn.microsoft.com/en-us/ef/core/modeling/relationships [Accessed 16 October 2026].
 
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RaceDay.Api.Data;
@@ -41,7 +42,7 @@ public class VenuesController : ControllerBase
 
     /// <summary>Creates a new venue. Organizers only.</summary>
     [HttpPost]
-    [SessionAuthorize("Organizer")]
+    [Authorize(Roles = "Organizer")]
     [ProducesResponseType(typeof(VenueResponse), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]

@@ -7,6 +7,7 @@
 //              https://learn.microsoft.com/en-us/ef/core/modeling/relationships [Accessed 16 October 2026].
 
 using System.Linq.Expressions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RaceDay.Api.Data;
@@ -125,7 +126,7 @@ public class EventsController : ControllerBase
 
     /// <summary>Creates an event owned by the logged-in Organizer.</summary>
     [HttpPost]
-    [SessionAuthorize("Organizer")]
+    [Authorize(Roles = "Organizer")]
     [ProducesResponseType(typeof(EventResponse), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -165,7 +166,7 @@ public class EventsController : ControllerBase
 
     /// <summary>Updates an event. Only the Organizer who created it can do this.</summary>
     [HttpPut("{id:int}")]
-    [SessionAuthorize("Organizer")]
+    [Authorize(Roles = "Organizer")]
     [ProducesResponseType(typeof(EventResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -209,7 +210,7 @@ public class EventsController : ControllerBase
 
     /// <summary>Deletes an event and its categories. Only the owner can do this, and only if nobody has enrolled.</summary>
     [HttpDelete("{id:int}")]
-    [SessionAuthorize("Organizer")]
+    [Authorize(Roles = "Organizer")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]

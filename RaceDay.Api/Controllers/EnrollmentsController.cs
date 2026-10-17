@@ -7,6 +7,7 @@
 //              https://learn.microsoft.com/en-us/ef/core/modeling/relationships [Accessed 16 October 2026].
 
 using System.Linq.Expressions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RaceDay.Api.Data;
@@ -44,7 +45,7 @@ public class EnrollmentsController : ControllerBase
 
     /// <summary>Enrols the logged-in Participant in an event under a chosen category. The enrollment starts as Pending.</summary>
     [HttpPost("enrollments")]
-    [SessionAuthorize("Participant")]
+    [Authorize(Roles = "Participant")]
     [ProducesResponseType(typeof(EnrollmentResponse), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -93,7 +94,7 @@ public class EnrollmentsController : ControllerBase
 
     /// <summary>Lists the logged-in Participant's own enrollments and their status, newest event first.</summary>
     [HttpGet("enrollments/me")]
-    [SessionAuthorize("Participant")]
+    [Authorize(Roles = "Participant")]
     [ProducesResponseType(typeof(List<EnrollmentResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -112,7 +113,7 @@ public class EnrollmentsController : ControllerBase
 
     /// <summary>Lists everyone enrolled in one event, with category and status. Only that event's Organizer can see this.</summary>
     [HttpGet("events/{eventId:int}/enrollments")]
-    [SessionAuthorize("Organizer")]
+    [Authorize(Roles = "Organizer")]
     [ProducesResponseType(typeof(List<EnrollmentResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -140,7 +141,7 @@ public class EnrollmentsController : ControllerBase
 
     /// <summary>Changes an enrollment's status (for example Pending to Confirmed). Only the event's Organizer can do this.</summary>
     [HttpPut("enrollments/{id:int}/status")]
-    [SessionAuthorize("Organizer")]
+    [Authorize(Roles = "Organizer")]
     [ProducesResponseType(typeof(EnrollmentResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -171,7 +172,7 @@ public class EnrollmentsController : ControllerBase
 
     /// <summary>Withdraws the logged-in Participant's own enrollment, unless a result has already been recorded for it.</summary>
     [HttpDelete("enrollments/{id:int}")]
-    [SessionAuthorize("Participant")]
+    [Authorize(Roles = "Participant")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]

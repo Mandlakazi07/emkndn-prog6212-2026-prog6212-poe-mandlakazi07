@@ -6,6 +6,7 @@
 // Reference:   Microsoft Learn, 2023. Introduction to relationships - EF Core. [online] Available at:
 //              https://learn.microsoft.com/en-us/ef/core/modeling/relationships [Accessed 16 October 2026].
 
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RaceDay.Api.Data;
@@ -55,7 +56,7 @@ public class CategoriesController : ControllerBase
 
     /// <summary>Adds a category to an event. Only the event's Organizer can do this.</summary>
     [HttpPost("events/{eventId:int}/categories")]
-    [SessionAuthorize("Organizer")]
+    [Authorize(Roles = "Organizer")]
     [ProducesResponseType(typeof(CategoryResponse), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -82,7 +83,7 @@ public class CategoriesController : ControllerBase
 
     /// <summary>Renames a category. Only the event's Organizer can do this.</summary>
     [HttpPut("categories/{id:int}")]
-    [SessionAuthorize("Organizer")]
+    [Authorize(Roles = "Organizer")]
     [ProducesResponseType(typeof(CategoryResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -108,7 +109,7 @@ public class CategoriesController : ControllerBase
 
     /// <summary>Deletes a category. Only the event's Organizer can do this, and only if nobody chose it.</summary>
     [HttpDelete("categories/{id:int}")]
-    [SessionAuthorize("Organizer")]
+    [Authorize(Roles = "Organizer")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
