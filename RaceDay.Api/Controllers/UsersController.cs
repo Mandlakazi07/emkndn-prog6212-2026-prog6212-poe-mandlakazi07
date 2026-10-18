@@ -3,8 +3,8 @@
 // Institution: The Independent Institute of Education (IIE)
 // Date:        16 October 2026
 // AI use:      Claude (Anthropic) helped draft and explain this file. Reviewed and understood by the student.
-// Reference:   Microsoft Learn, n.d. Session and state management in ASP.NET Core. [online] Available at:
-//              https://learn.microsoft.com/aspnet/core/fundamentals/app-state [Accessed 16 October 2026].
+// Reference:   Microsoft Learn, n.d. Use cookie authentication without ASP.NET Core Identity. [online] Available at:
+//              https://learn.microsoft.com/aspnet/core/security/authentication/cookie [Accessed 18 October 2026].
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

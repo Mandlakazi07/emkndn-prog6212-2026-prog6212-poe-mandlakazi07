@@ -11,7 +11,7 @@ using System.ComponentModel.DataAnnotations;
 namespace RaceDay.Api.Dtos;
 
 // What an Organizer sends to create or update an event.
-// The organizer is NOT sent: the API takes it from the logged-in session so nobody can create events as someone else.
+// The organizer is NOT sent: the API takes it from the login cookie so nobody can create events as someone else.
 public class EventRequest
 {
     [Required, MaxLength(150)]

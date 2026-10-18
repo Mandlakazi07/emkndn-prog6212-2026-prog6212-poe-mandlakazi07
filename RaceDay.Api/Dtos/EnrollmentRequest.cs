@@ -11,7 +11,7 @@ using System.ComponentModel.DataAnnotations;
 namespace RaceDay.Api.Dtos;
 
 // What a Participant sends to enter an event: which event, and which category within it.
-// The participant is NOT sent: the API takes it from the session.
+// The participant is NOT sent: the API takes it from the login cookie.
 public class EnrollmentRequest
 {
     [Range(1, int.MaxValue, ErrorMessage = "A valid EventID is required.")]
