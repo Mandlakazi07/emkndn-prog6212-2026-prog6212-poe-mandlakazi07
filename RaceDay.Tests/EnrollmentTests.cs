@@ -1,20 +1,24 @@
 ﻿// Student:     Mandlakazi Sibiya (ST10473547)
 // Module:      PROG6212 Programming 2B - PoE Part 2
 // Institution: The Independent Institute of Education (IIE)
-// Date:        17 October 2026
+// Date:        18 October 2026
 // AI use:      Claude (Anthropic) helped draft and explain this file. Reviewed and understood by the student.
-// Reference:   Microsoft Learn, n.d. Integration tests in ASP.NET Core. [online] Available at:
+// References:  Adnan, Y., n.d. Unit testing with the Auth API [lecture notes]. PROG6212, The Independent Institute of Education (IIE).
+//              Adnan, Y., n.d. Authentication_API_With_UnitTesting. [online] GitHub. Available at:
+//              https://github.com/YusraAdnan/Authentication_API_With_UnitTesting [Accessed 17 October 2026].
+//              Microsoft Learn, n.d. Integration tests in ASP.NET Core. [online] Available at:
 //              https://learn.microsoft.com/aspnet/core/test/integration-tests [Accessed 17 October 2026].
 
 using System.Net;
 using System.Net.Http.Json;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RaceDay.Api.Dtos;
 using RaceDay.Tests.TestSupport;
-using Xunit;
 
 namespace RaceDay.Tests;
 
 // Tests for enrolling in events: who can enrol, what is recorded, and what is refused
+[TestClass]
 public class EnrollmentTests : ApiTestBase
 {
     // An Organizer with one event (and one category in it) ready to be entered
@@ -31,7 +35,7 @@ public class EnrollmentTests : ApiTestBase
     private static Task<HttpResponseMessage> EnrollAsync(HttpClient participant, int eventId, int categoryId) =>
         participant.PostAsJsonAsync("/api/enrollments", new { eventID = eventId, categoryID = categoryId });
 
-    [Fact]
+    [TestMethod]
     public async Task Participant_CanEnrol_AndTheEnrollmentIsRecordedAsPending()
     {
         var (organizer, ev, category) = await SetUpEventAsync();
@@ -39,25 +43,25 @@ public class EnrollmentTests : ApiTestBase
 
         var response = await EnrollAsync(participant, ev.EventID, category.CategoryID);
 
-        Assert.Equal(HttpStatusCode.Created, response.StatusCode);
+        Assert.AreEqual(HttpStatusCode.Created, response.StatusCode);
         var created = await response.Content.ReadFromJsonAsync<EnrollmentResponse>();
-        Assert.Equal("Pending", created!.Status);
+        Assert.AreEqual("Pending", created!.Status);
 
         // The participant sees it in their own list, linked to the right event and category
         var mine = await participant.GetFromJsonAsync<List<EnrollmentResponse>>("/api/enrollments/me");
-        var item = Assert.Single(mine!);
-        Assert.Equal(ev.EventID, item.EventID);
-        Assert.Equal(category.CategoryID, item.CategoryID);
+        Assert.AreEqual(1, mine!.Count);
+        Assert.AreEqual(ev.EventID, mine[0].EventID);
+        Assert.AreEqual(category.CategoryID, mine[0].CategoryID);
 
         // The Organizer sees it in the list for their event
         var forOrganizer = await organizer.GetFromJsonAsync<List<EnrollmentResponse>>(
             $"/api/events/{ev.EventID}/enrollments");
-        var orgItem = Assert.Single(forOrganizer!);
-        Assert.Equal("Test User", orgItem.ParticipantName);
-        Assert.Equal("10km", orgItem.CategoryName);
+        Assert.AreEqual(1, forOrganizer!.Count);
+        Assert.AreEqual("Test User", forOrganizer[0].ParticipantName);
+        Assert.AreEqual("10km", forOrganizer[0].CategoryName);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task Participant_CannotEnrolTwiceInTheSameEvent_Returns409()
     {
         var (_, ev, category) = await SetUpEventAsync();
@@ -66,30 +70,30 @@ public class EnrollmentTests : ApiTestBase
 
         var second = await EnrollAsync(participant, ev.EventID, category.CategoryID);
 
-        Assert.Equal(HttpStatusCode.Conflict, second.StatusCode);
+        Assert.AreEqual(HttpStatusCode.Conflict, second.StatusCode);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task Organizer_CannotEnrol_Returns403()
     {
         var (organizer, ev, category) = await SetUpEventAsync();
 
         var response = await EnrollAsync(organizer, ev.EventID, category.CategoryID);
 
-        Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
+        Assert.AreEqual(HttpStatusCode.Forbidden, response.StatusCode);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task Unauthenticated_CannotEnrol_Returns401()
     {
         var (_, ev, category) = await SetUpEventAsync();
 
         var response = await EnrollAsync(NewClient(), ev.EventID, category.CategoryID);
 
-        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+        Assert.AreEqual(HttpStatusCode.Unauthorized, response.StatusCode);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task Enrol_WithACategoryFromAnotherEvent_Returns400()
     {
         var (organizer, ev, _) = await SetUpEventAsync();
@@ -99,10 +103,10 @@ public class EnrollmentTests : ApiTestBase
 
         var response = await EnrollAsync(participant, ev.EventID, otherCategory.CategoryID);
 
-        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task Enrol_InAnEventThatAlreadyHappened_Returns400()
     {
         var (_, ev, category) = await SetUpEventAsync(daysFromToday: -5);
@@ -110,10 +114,10 @@ public class EnrollmentTests : ApiTestBase
 
         var response = await EnrollAsync(participant, ev.EventID, category.CategoryID);
 
-        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task Organizer_CanConfirmAnEnrollment_AndTheParticipantSeesIt()
     {
         var (organizer, ev, category) = await SetUpEventAsync();
@@ -124,12 +128,13 @@ public class EnrollmentTests : ApiTestBase
         var confirm = await organizer.PutAsJsonAsync(
             $"/api/enrollments/{enrollment!.EnrollmentID}/status", new { status = "Confirmed" });
 
-        Assert.Equal(HttpStatusCode.OK, confirm.StatusCode);
+        Assert.AreEqual(HttpStatusCode.OK, confirm.StatusCode);
         var mine = await participant.GetFromJsonAsync<List<EnrollmentResponse>>("/api/enrollments/me");
-        Assert.Equal("Confirmed", Assert.Single(mine!).Status);
+        Assert.AreEqual(1, mine!.Count);
+        Assert.AreEqual("Confirmed", mine[0].Status);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task Participant_CannotConfirmAnEnrollment_Returns403()
     {
         var (_, ev, category) = await SetUpEventAsync();
@@ -140,10 +145,10 @@ public class EnrollmentTests : ApiTestBase
         var response = await participant.PutAsJsonAsync(
             $"/api/enrollments/{enrollment!.EnrollmentID}/status", new { status = "Confirmed" });
 
-        Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
+        Assert.AreEqual(HttpStatusCode.Forbidden, response.StatusCode);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task Organizer_CannotSeeEnrollmentsForAnotherOrganizersEvent_Returns403()
     {
         var (_, ev, _) = await SetUpEventAsync();
@@ -151,10 +156,10 @@ public class EnrollmentTests : ApiTestBase
 
         var response = await otherOrganizer.GetAsync($"/api/events/{ev.EventID}/enrollments");
 
-        Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
+        Assert.AreEqual(HttpStatusCode.Forbidden, response.StatusCode);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task Participant_CanWithdrawTheirOwnEnrollment_Returns204()
     {
         var (_, ev, category) = await SetUpEventAsync();
@@ -164,8 +169,8 @@ public class EnrollmentTests : ApiTestBase
 
         var delete = await participant.DeleteAsync($"/api/enrollments/{enrollment!.EnrollmentID}");
 
-        Assert.Equal(HttpStatusCode.NoContent, delete.StatusCode);
+        Assert.AreEqual(HttpStatusCode.NoContent, delete.StatusCode);
         var mine = await participant.GetFromJsonAsync<List<EnrollmentResponse>>("/api/enrollments/me");
-        Assert.Empty(mine!);
+        Assert.AreEqual(0, mine!.Count);
     }
 }

@@ -1,25 +1,30 @@
 ﻿// Student:     Mandlakazi Sibiya (ST10473547)
 // Module:      PROG6212 Programming 2B - PoE Part 2
 // Institution: The Independent Institute of Education (IIE)
-// Date:        17 October 2026
+// Date:        18 October 2026
 // AI use:      Claude (Anthropic) helped draft and explain this file. Reviewed and understood by the student.
-// Reference:   Microsoft Learn, n.d. Integration tests in ASP.NET Core. [online] Available at:
+// References:  Adnan, Y., n.d. Unit testing with the Auth API [lecture notes]. PROG6212, The Independent Institute of Education (IIE).
+//              Adnan, Y., n.d. Authentication_API_With_UnitTesting. [online] GitHub. Available at:
+//              https://github.com/YusraAdnan/Authentication_API_With_UnitTesting [Accessed 17 October 2026].
+//              Microsoft Learn, n.d. Integration tests in ASP.NET Core. [online] Available at:
 //              https://learn.microsoft.com/aspnet/core/test/integration-tests [Accessed 17 October 2026].
 
 using System.Net.Http.Json;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RaceDay.Api.Dtos;
 
 namespace RaceDay.Tests.TestSupport;
 
-// Shared helpers for all API tests. xUnit creates a new instance of the test class for every test,
+// Shared helpers for all API tests. MSTest creates a new instance of the test class for every test,
 // so each test gets its own factory and therefore its own empty database.
-public abstract class ApiTestBase : IDisposable
+[TestClass]
+public abstract class ApiTestBase
 {
     protected const string Password = "Passw0rd!123";
 
     protected readonly RaceDayFactory Factory = new();
 
-    // A new client is a new "browser" with its own session cookie
+    // A new client is a new "browser" with its own login cookie
     protected HttpClient NewClient() => Factory.CreateClient();
 
     // A date relative to today in the format the API expects (0 = today, negative = past)
@@ -75,9 +80,10 @@ public abstract class ApiTestBase : IDisposable
         return (await response.Content.ReadFromJsonAsync<CategoryResponse>())!;
     }
 
-    public void Dispose()
+    // Runs after every test: shuts the in-memory API down
+    [TestCleanup]
+    public void Cleanup()
     {
         Factory.Dispose();
-        GC.SuppressFinalize(this);
     }
 }
