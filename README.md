@@ -17,58 +17,48 @@ There are two roles:
 - **Participant** - browses events, enrols in an event by choosing a category, views their own enrollments, and views their own race results.
 
 ## 2. Repository structure
-RaceDay.Api/ the ASP.NET Core Web API
-Controllers/ endpoints: Auth, Users, Venues, Events, Categories, Enrollments, Results
-Data/ AppDbContext (EF Core): tables, constraints and relationships
-Dtos/ the shapes of requests and responses
-Migrations/ EF Core migrations that build the database
-Models/ entity classes matching the Part 1 ERD
-Security/ session helpers and the [SessionAuthorize] role attribute
-RaceDay.Tests/ xUnit tests (36)
-docs/ Part 1 planning documents (ERD, endpoint plan, SQL script)
-docs/part2/ Part 2 CI screenshots
-.github/workflows/ ci.yml (Part 2 build and test) and docs-check.yml (Part 1)
 
+    RaceDay.Api/          the ASP.NET Core Web API
+      Controllers/        endpoints: Auth, Users, Venues, Events, Categories, Enrollments, Results
+      Data/               AppDbContext (EF Core): tables, constraints and relationships
+      Dtos/               the shapes of requests and responses
+      Migrations/         EF Core migrations that build the database
+      Models/             entity classes matching the Part 1 ERD
+      Security/           helpers that read the user's ID and role from the login cookie
+    RaceDay.Tests/        MSTest tests (36)
+    docs/                 Part 1 planning documents (ERD, endpoint plan, SQL script)
+    docs/part2/           Part 2 CI screenshots
+    .github/workflows/    ci.yml (Part 2 build and test) and docs-check.yml (Part 1)
 
 ## 3. Technology
 
 - ASP.NET Core Web API, C#, .NET 10
 - Entity Framework Core 10, **code-first** with migrations
 - SQL Server (Express edition)
-- **Session-based authentication** (server-side session, not JWT)
+- **Cookie authentication** with claims and role-based authorization (not JWT), following the module's Auth API example
 - BCrypt.Net-Next for password hashing
 - Built-in OpenAPI plus Swagger UI for browser testing
-- xUnit integration tests using an in-memory database
+- MSTest integration tests with an in-memory database, following the module's unit testing guide
 - GitHub Actions for continuous integration
 
 ## 4. Running the API
 
 Prerequisites: the .NET 10 SDK, SQL Server Express, and the EF Core tool (`dotnet tool install --global dotnet-ef`).
 
-1. Clone the repository and switch to this branch:
-
-git clone https://github.com/Mandlakazi07/emkndn-prog6212-2026-prog6212-poe-mandlakazi07.git
-cd emkndn-prog6212-2026-prog6212-poe-mandlakazi07
-git checkout part2
-
-2. Check the connection string in `RaceDay.Api/appsettings.json`. It uses `localhost\SQLEXPRESS` with Windows authentication and `TrustServerCertificate=True`. Change it if your SQL Server instance is named differently.
-3. Create the database from the migrations. This creates `RaceDayApiDB` with the same six tables, keys and constraints as Part 1:
-
-dotnet ef database update --project RaceDay.Api
-
-4. Start the API:
-
-dotnet run --project RaceDay.Api
-
-5. Open Swagger UI at `http://localhost:5159/swagger` (use the port printed in the console if yours differs). Every endpoint is listed with a description, the data it expects and the responses it returns, and can be tested directly in the browser.
+1. Clone the repository: `git clone https://github.com/Mandlakazi07/emkndn-prog6212-2026-prog6212-poe-mandlakazi07.git`
+2. Move into it and switch to this branch: `cd emkndn-prog6212-2026-prog6212-poe-mandlakazi07` then `git checkout part2`
+3. Check the connection string in `RaceDay.Api/appsettings.json`. It uses `localhost\SQLEXPRESS` with Windows authentication and `TrustServerCertificate=True`. Change it if your SQL Server instance is named differently.
+4. Create the database from the migrations. This creates `RaceDayApiDB` with the same six tables, keys and constraints as Part 1: `dotnet ef database update --project RaceDay.Api`
+5. Start the API: `dotnet run --project RaceDay.Api`
+6. Open Swagger UI at `http://localhost:5159/swagger` (use the port printed in the console if yours differs). Every endpoint is listed with a description, the data it expects and the responses it returns, and can be tested directly in the browser.
 
 ## 5. Authentication and roles
 
-- **Register** with a role of `Organizer` or `Participant`. Passwords must be at least 8 characters.
-- Passwords are hashed with **BCrypt** (a random salt is added automatically). The plain password is never stored, and the API never returns the hash.
-- **Login** starts a server-side session that stores the user's ID and role. The browser only holds a session ID cookie (HttpOnly). Sessions expire after 30 minutes of inactivity. They live in server memory, so restarting the API logs everyone out.
+- **Register** with a role of `Organizer` or `Participant`. Passwords must be at least 8 characters. Passwords are hashed with **BCrypt** (a random salt is added automatically). The plain password is never stored, and the API never returns the hash. (The class example uses ASP.NET's PasswordHasher; BCrypt is another salted one-way hash and does the same job.)
+- **Login** checks the password, then creates **claims** (the user's ID, email and role), bundles them into an identity, and calls `SignInAsync`. ASP.NET Core then sets an **encrypted login cookie** (`RaceDay.Auth`, HttpOnly, 30-minute sliding expiry). The browser sends that cookie with every request, and the API reads the user's ID and role from it. No JWT is used anywhere.
 - Login gives the same error for an unknown email and a wrong password, so an attacker cannot tell which one was wrong.
-- The `[SessionAuthorize]` attribute protects endpoints. **401 Unauthorized** means "not logged in". **403 Forbidden** means "logged in, but the wrong role or not the owner".
+- **Logout** removes the cookie with `SignOutAsync`.
+- Endpoints are protected with `[Authorize]` (any logged-in user) and `[Authorize(Roles = "Organizer")]` or `[Authorize(Roles = "Participant")]` (one role). `Program.cs` configures the cookie so that **401 Unauthorized** means "not logged in" and **403 Forbidden** means "logged in, but the wrong role", instead of redirecting to a login page.
 - **Ownership rule:** an Organizer can only change, delete, or view enrollments and results for events they created.
 
 ## 6. Endpoints
@@ -120,11 +110,11 @@ Business rules the API enforces:
 
 ## 8. Unit tests
 
-Run all tests with `dotnet test`. They need no SQL Server: each test starts the real API in memory with its own empty in-memory database, then sends real HTTP requests and checks the status codes and results. Each client has its own session cookie, so a test can act as an Organizer and a Participant at the same time.
+Run all tests with `dotnet test`. The tests follow the module's unit testing guide: each test starts the whole API in memory with `WebApplicationFactory`, replaces SQL Server with an in-memory database, then sends real HTTP requests and checks the status codes and results. No SQL Server is needed, and every test starts with an empty database. The test client keeps its login cookie like a browser, so a test can act as an Organizer and a Participant at the same time.
 
 | Area | Tests | What is checked |
 |---|---|---|
-| Registration, login, logout, session | 10 | valid and invalid registration, duplicate email, BCrypt hashing in the database, login success and failure, logout, unauthenticated access |
+| Registration, login, logout | 10 | valid and invalid registration, duplicate email, BCrypt hashing in the database, login success and failure, logout removes the cookie, unauthenticated access |
 | Event management and role restrictions | 11 | Organizer can create, update and delete their own events, cannot change another Organizer's event, Participant gets 403, anonymous gets 401, filters |
 | Enrollments | 10 | Participant can enrol and it is recorded correctly, duplicate enrollment, wrong category, past event, Organizer cannot enrol, confirming, withdrawing |
 | Results | 5 | Organizer can record a result and the Participant sees it, Participant cannot record, too early, duplicate |
@@ -145,9 +135,15 @@ A 5 to 7 minute unlisted YouTube video demonstrates the running API, its endpoin
 
 ## 11. AI disclosure
 
-Claude (Anthropic) was used as an assistant while building Part 2: to suggest the project structure, draft and explain code (models, DbContext, controllers, tests and the CI workflow), draft this README, and help fix build and Git errors. Every file carries an attribution header. All code was run, tested and reviewed by the student.
+Deepseek was used as an assistant while building Part 2: to suggest the project structure, draft and explain code (models, DbContext, controllers, tests and the CI workflow), to adjust the authentication and the tests to follow the module's Auth API example and unit testing guide, to draft this README, and to help fix build and Git errors. Every file carries an attribution header. All code was run, tested and reviewed by the student  https://chat.deepseek.com/share/eh9a3yqtfj3spkx0hf .
 
 ## 12. References (IIE Harvard Anglia)
+
+Adnan, Y., n.d. *Application Programming Interface* [lecture slides]. PROG6212, The Independent Institute of Education (IIE).
+
+Adnan, Y., n.d. *Authentication_API_With_UnitTesting*. [online] GitHub. Available at: https://github.com/YusraAdnan/Authentication_API_With_UnitTesting [Accessed 17 October 2026].
+
+Adnan, Y., n.d. *Unit testing with the Auth API* [lecture notes]. PROG6212, The Independent Institute of Education (IIE).
 
 GitHub Docs, n.d. *Building and testing .NET*. [online] Available at: https://docs.github.com/en/actions/tutorials/build-and-test-code/net [Accessed 17 October 2026].
 
@@ -159,6 +155,6 @@ Microsoft Learn, n.d. *Integration tests in ASP.NET Core*. [online] Available at
 
 Microsoft Learn, n.d. *Model validation in ASP.NET Core MVC and Razor Pages*. [online] Available at: https://learn.microsoft.com/aspnet/core/mvc/models/validation [Accessed 16 October 2026].
 
-Microsoft Learn, n.d. *Session and state management in ASP.NET Core*. [online] Available at: https://learn.microsoft.com/aspnet/core/fundamentals/app-state [Accessed 16 October 2026].
-
 Microsoft Learn, n.d. *TableBuilder.HasCheckConstraint(String, String) Method*. [online] Available at: https://learn.microsoft.com/en-gb/dotnet/api/microsoft.entityframeworkcore.metadata.builders.tablebuilder.hascheckconstraint?view=efcore-10.0 [Accessed 16 October 2026].
+
+Microsoft Learn, n.d. *Use cookie authentication without ASP.NET Core Identity*. [online] Available at: https://learn.microsoft.com/aspnet/core/security/authentication/cookie [Accessed 18 October 2026].
