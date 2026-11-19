@@ -1,0 +1,74 @@
+@*
+   Student:     Mandlakazi Sibiya (ST10473547)
+   Module:      PROG6212 Programming 2B - PoE Part 3
+   Institution: The Independent Institute of Education (IIE)
+   Date:        17 November 2026
+   AI use:      Claude (Anthropic) helped draft and explain this file. Reviewed and understood by the student.
+   References:  Bootstrap, n.d. Bootstrap 5.3 documentation. [online] Available at:
+                https://getbootstrap.com/docs/5.3/getting-started/introduction/ [Accessed 17 November 2026].
+*@
+@model EventEnrollmentsViewModel
+@{
+    ViewData["Title"] = "Enrollments";
+}
+
+<div class="rd-page-header">
+    <div class="container">
+        <h1>Enrollments</h1>
+        <p>@Model.Event.Name | @Model.Event.EventDate.ToString("dd MMM yyyy")</p>
+    </div>
+</div>
+
+<div class="container rd-section">
+    @if (!Model.Enrollments.Any())
+    {
+        <p class="text-muted">Nobody has entered this event yet.</p>
+    }
+    else
+    {
+        <div class="table-responsive rd-table-card">
+            <table class="table align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th>Participant</th>
+                        <th>Category</th>
+                        <th>Entered on</th>
+                        <th>Status</th>
+                        <th class="text-end">Change status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var enrollment in Model.Enrollments.OrderBy(e => e.ParticipantName))
+                    {
+                        <tr>
+                            <td><strong>@enrollment.ParticipantName</strong></td>
+                            <td>@enrollment.CategoryName</td>
+                            <td>@enrollment.EnrollmentDate.ToString("dd MMM yyyy")</td>
+                            <td><partial name="_StatusBadge" model="enrollment.Status" /></td>
+                            <td class="text-end text-nowrap">
+                                @if (enrollment.Status != "Confirmed")
+                                {
+                                    <form asp-action="UpdateStatus" asp-route-eventId="@Model.Event.EventID" asp-route-id="@enrollment.EnrollmentID"
+                                          method="post" class="d-inline">
+                                        <input type="hidden" name="status" value="Confirmed" />
+                                        <button type="submit" class="btn btn-success btn-sm">Confirm</button>
+                                    </form>
+                                }
+                                @if (enrollment.Status != "Cancelled")
+                                {
+                                    <form asp-action="UpdateStatus" asp-route-eventId="@Model.Event.EventID" asp-route-id="@enrollment.EnrollmentID"
+                                          method="post" class="d-inline"
+                                          onsubmit="return confirm('Cancel this enrollment?');">
+                                        <input type="hidden" name="status" value="Cancelled" />
+                                        <button type="submit" class="btn btn-outline-danger btn-sm">Cancel</button>
+                                    </form>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    <a class="btn btn-outline-primary mt-3" asp-controller="OrganizerEvents" asp-action="Index">Back to my events</a>
+</div>
