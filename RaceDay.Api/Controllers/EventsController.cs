@@ -37,6 +37,7 @@ public class EventsController : ControllerBase
         EventDate = e.EventDate,
         Distance = e.Distance,
         EventType = e.EventType,
+        BannerImageUrl = e.BannerImageUrl,
         OrganizerID = e.OrganizerID,
         OrganizerName = e.Organizer.FullName,
         Venue = new VenueResponse
