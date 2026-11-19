@@ -1,0 +1,6 @@
+Put your own photos in this folder.
+
+hero.jpg  -> the big picture behind the home page heading (wide, landscape, about 1600 pixels across)
+
+Before you add a photo: remove its location data (right-click > Properties > Details > "Remove Properties and Personal Information"),
+make it a JPG under about 500 KB, and make sure nobody recognisable is in it without their permission.
