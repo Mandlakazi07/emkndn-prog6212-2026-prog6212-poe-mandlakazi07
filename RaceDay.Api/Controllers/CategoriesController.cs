@@ -31,7 +31,7 @@ public class CategoriesController : ControllerBase
     {
         CategoryID = c.CategoryID,
         EventID = c.EventID,
-        CategoryName = c.CategoryName
+        CategoryName = c.CategoryName, MinAge = c.MinAge, MaxAge = c.MaxAge, DistanceKm = c.DistanceKm
     };
 
     /// <summary>Lists the categories available for one event.</summary>
@@ -48,7 +48,7 @@ public class CategoriesController : ControllerBase
         var categories = await _db.Categories.AsNoTracking()
             .Where(c => c.EventID == eventId)
             .OrderBy(c => c.CategoryName)
-            .Select(c => new CategoryResponse { CategoryID = c.CategoryID, EventID = c.EventID, CategoryName = c.CategoryName })
+            .Select(c => new CategoryResponse { CategoryID = c.CategoryID, EventID = c.EventID, CategoryName = c.CategoryName, MinAge = c.MinAge, MaxAge = c.MaxAge, DistanceKm = c.DistanceKm })
             .ToListAsync();
 
         return Ok(categories);
@@ -74,7 +74,7 @@ public class CategoriesController : ControllerBase
             return StatusCode(StatusCodes.Status403Forbidden, new { message = "You can only add categories to your own events." });
         }
 
-        var category = new Category { EventID = eventId, CategoryName = request.CategoryName.Trim() };
+        var category = new Category { EventID = eventId, CategoryName = request.CategoryName.Trim(), MinAge = request.MinAge, MaxAge = request.MaxAge, DistanceKm = request.DistanceKm };
         _db.Categories.Add(category);
         await _db.SaveChangesAsync();
 
@@ -102,6 +102,9 @@ public class CategoriesController : ControllerBase
         }
 
         category.CategoryName = request.CategoryName.Trim();
+        category.MinAge = request.MinAge;
+        category.MaxAge = request.MaxAge;
+        category.DistanceKm = request.DistanceKm;
         await _db.SaveChangesAsync();
 
         return Ok(ToResponse(category));
