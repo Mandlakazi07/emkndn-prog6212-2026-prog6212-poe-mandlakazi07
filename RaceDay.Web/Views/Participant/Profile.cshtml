@@ -1,0 +1,76 @@
+@*
+   Student:     Mandlakazi Sibiya (ST10473547)
+   Module:      PROG6212 Programming 2B - PoE Part 3
+   Institution: The Independent Institute of Education (IIE)
+   Date:        17 November 2026
+   AI use:      Claude (Anthropic) helped draft and explain this file. Reviewed and understood by the student.
+   References:  Microsoft Learn, n.d. Model validation in ASP.NET Core MVC and Razor Pages. [online] Available at:
+                https://learn.microsoft.com/aspnet/core/mvc/models/validation [Accessed 17 November 2026].
+                Microsoft Learn, n.d. Upload files in ASP.NET Core. [online] Available at:
+                https://learn.microsoft.com/aspnet/core/mvc/models/file-uploads [Accessed 17 November 2026].
+                Bootstrap, n.d. Bootstrap 5.3 documentation. [online] Available at:
+                https://getbootstrap.com/docs/5.3/getting-started/introduction/ [Accessed 17 November 2026].
+*@
+@model ProfileViewModel
+@{
+    ViewData["Title"] = "Profile";
+    var initials = string.Concat(Model.User.FullName.Split(' ', StringSplitOptions.RemoveEmptyEntries).Take(2).Select(p => char.ToUpperInvariant(p[0])));
+}
+
+<div class="rd-page-header">
+    <div class="container">
+        <h1>My profile</h1>
+        <p>Your details and picture.</p>
+    </div>
+</div>
+
+<div class="container rd-section">
+    <div class="row g-4">
+        <div class="col-lg-4">
+            <div class="rd-form-card text-center">
+                @if (!string.IsNullOrEmpty(Model.User.ProfilePictureUrl))
+                {
+                    <img src="@Model.User.ProfilePictureUrl" alt="Your profile picture" class="rd-avatar rd-avatar-img" />
+                }
+                else
+                {
+                    <div class="rd-avatar">@initials</div>
+                }
+                <h2 class="h5 mt-3 mb-0">@Model.User.FullName</h2>
+                <p class="text-muted">@Model.User.Role</p>
+
+                <form asp-action="UploadPicture" method="post" enctype="multipart/form-data" class="text-start">
+                    <label for="picture" class="form-label">Change picture</label>
+                    <input id="picture" name="picture" type="file" class="form-control mb-2" accept="image/jpeg,image/png,image/webp" required />
+                    <div class="form-text mb-2">JPEG, PNG or WebP, up to 2 MB.</div>
+                    <button type="submit" class="btn btn-outline-primary w-100">Upload picture</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="col-lg-8">
+            <div class="rd-form-card">
+                <h2 class="h4">Personal details</h2>
+                <form asp-action="SaveProfile" method="post">
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                    <div class="mb-3">
+                        <label asp-for="Form.FullName" class="form-label"></label>
+                        <input asp-for="Form.FullName" class="form-control" />
+                        <span asp-validation-for="Form.FullName" class="text-danger"></span>
+                    </div>
+                    <div class="mb-4">
+                        <label asp-for="Form.Email" class="form-label"></label>
+                        <input asp-for="Form.Email" class="form-control" />
+                        <span asp-validation-for="Form.Email" class="text-danger"></span>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Save changes</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
