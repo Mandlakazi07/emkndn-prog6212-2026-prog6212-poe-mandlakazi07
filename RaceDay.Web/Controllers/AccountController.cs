@@ -1,7 +1,7 @@
 // Student:     Mandlakazi Sibiya (ST10473547)
 // Module:      PROG6212 Programming 2B - PoE Part 3
 // Institution: The Independent Institute of Education (IIE)
-// Date:        3 November 2026
+// Date:        17 November 2026
 // AI use:      Claude (Anthropic) helped draft and explain this file. Reviewed and understood by the student.
 // References:  Microsoft Learn, n.d. Use cookie authentication without ASP.NET Core Identity. [online] Available at:
 //              https://learn.microsoft.com/aspnet/core/security/authentication/cookie [Accessed 3 November 2026].
@@ -36,7 +36,7 @@ public class AccountController : AppController
         // Someone who is already logged in has no reason to be here
         if (User.Identity?.IsAuthenticated == true)
         {
-            return RedirectToAction("Index", "Home");
+            return RedirectForRole(User.IsInRole("Organizer") ? "Organizer" : "Participant");
         }
 
         return View(new RegisterViewModel());
@@ -68,7 +68,7 @@ public class AccountController : AppController
     {
         if (User.Identity?.IsAuthenticated == true)
         {
-            return RedirectToAction("Index", "Home");
+            return RedirectForRole(User.IsInRole("Organizer") ? "Organizer" : "Participant");
         }
 
         ViewData["ReturnUrl"] = returnUrl;
@@ -115,7 +115,7 @@ public class AccountController : AppController
             return LocalRedirect(returnUrl);
         }
 
-        return RedirectToAction("Index", "Home");
+        return RedirectForRole(login.User.Role);
     }
 
     [HttpPost]
@@ -129,6 +129,14 @@ public class AccountController : AppController
 
         TempData["Success"] = "You have been logged out.";
         return RedirectToAction("Index", "Home");
+    }
+
+    // Organizers start on their dashboard, everyone else on the home page
+    private IActionResult RedirectForRole(string role)
+    {
+        return role == "Organizer"
+            ? RedirectToAction("Dashboard", "Organizer")
+            : RedirectToAction("Index", "Home");
     }
 
     [HttpGet]
