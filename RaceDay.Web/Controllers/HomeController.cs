@@ -1,10 +1,12 @@
 // Student:     Mandlakazi Sibiya (ST10473547)
 // Module:      PROG6212 Programming 2B - PoE Part 3
 // Institution: The Independent Institute of Education (IIE)
-// Date:        3 November 2026
+// Date:        17 November 2026
 // AI use:      Claude (Anthropic) helped draft and explain this file. Reviewed and understood by the student.
 // References:  Microsoft Learn, n.d. Make HTTP requests using IHttpClientFactory in ASP.NET Core. [online] Available at:
-//              https://learn.microsoft.com/aspnet/core/fundamentals/http-requests [Accessed 3 November 2026].
+//              https://learn.microsoft.com/aspnet/core/fundamentals/http-requests [Accessed 17 November 2026].
+//              Microsoft Learn, n.d. Model validation in ASP.NET Core MVC and Razor Pages. [online] Available at:
+//              https://learn.microsoft.com/aspnet/core/mvc/models/validation [Accessed 17 November 2026].
 
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
@@ -23,16 +25,37 @@ public class HomeController : AppController
         _api = api;
     }
 
-    // The home page lists the upcoming events. Anyone can see it, logged in or not.
-    public async Task<IActionResult> Index()
+    // The home page lists upcoming events and lets visitors filter them. Anyone can see it, logged in or not.
+    public async Task<IActionResult> Index(string? eventType, string? city, DateOnly? fromDate, DateOnly? toDate)
     {
-        var result = await _api.GetUpcomingEventsAsync();
+        var model = new HomeViewModel { EventType = eventType, City = city, FromDate = fromDate, ToDate = toDate };
 
-        var model = new HomeViewModel
+        // All upcoming events: used for the city drop-down, and as the list when no filter is chosen
+        var all = await _api.GetUpcomingEventsAsync();
+        if (!all.Success)
         {
-            Events = result.Data ?? new List<EventDto>(),
-            ErrorMessage = result.Success ? null : result.Error
-        };
+            model.ErrorMessage = all.Error;
+            return View(model);
+        }
+
+        var allEvents = all.Data ?? new List<EventDto>();
+        model.Cities = allEvents.Select(e => e.Venue.City).Distinct().OrderBy(c => c).ToList();
+
+        if (model.HasFilters)
+        {
+            // The API does the filtering
+            var filtered = await _api.GetEventsAsync(eventType, city, fromDate, toDate);
+            if (!filtered.Success)
+            {
+                model.ErrorMessage = filtered.Error;
+                return View(model);
+            }
+            model.Events = filtered.Data ?? new List<EventDto>();
+        }
+        else
+        {
+            model.Events = allEvents;
+        }
 
         return View(model);
     }
