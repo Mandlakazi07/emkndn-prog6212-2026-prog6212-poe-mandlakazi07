@@ -35,7 +35,16 @@ namespace RaceDay.Api.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
+                    b.Property<decimal?>("DistanceKm")
+                        .HasColumnType("decimal(6,2)");
+
                     b.Property<int>("EventID")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("MaxAge")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("MinAge")
                         .HasColumnType("int");
 
                     b.HasKey("CategoryID");
