@@ -13,6 +13,7 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 using RaceDay.Api.Data;
+using RaceDay.Api.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -48,6 +49,9 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
     });
 
 builder.Services.AddAuthorization();
+
+// Image storage: the API saves uploaded images to Azure Blob Storage through this service
+builder.Services.AddSingleton<IImageStorage, BlobImageStorage>();
 
 // Add services to the container.
 builder.Services.AddControllers();
