@@ -48,7 +48,7 @@ public class EventsController : ControllerBase
             City = e.Venue.City
         },
         Categories = e.Categories
-            .Select(c => new CategoryResponse { CategoryID = c.CategoryID, EventID = c.EventID, CategoryName = c.CategoryName })
+            .Select(c => new CategoryResponse { CategoryID = c.CategoryID, EventID = c.EventID, CategoryName = c.CategoryName, MinAge = c.MinAge, MaxAge = c.MaxAge, DistanceKm = c.DistanceKm })
             .ToList()
     };
 
