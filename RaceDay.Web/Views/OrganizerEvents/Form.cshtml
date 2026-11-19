@@ -1,0 +1,115 @@
+@*
+   Student:     Mandlakazi Sibiya (ST10473547)
+   Module:      PROG6212 Programming 2B - PoE Part 3
+   Institution: The Independent Institute of Education (IIE)
+   Date:        17 November 2026
+   AI use:      Claude (Anthropic) helped draft and explain this file. Reviewed and understood by the student.
+   References:  Microsoft Learn, n.d. Model validation in ASP.NET Core MVC and Razor Pages. [online] Available at:
+                https://learn.microsoft.com/aspnet/core/mvc/models/validation [Accessed 17 November 2026].
+                Microsoft Learn, n.d. Upload files in ASP.NET Core. [online] Available at:
+                https://learn.microsoft.com/aspnet/core/mvc/models/file-uploads [Accessed 17 November 2026].
+                Bootstrap, n.d. Bootstrap 5.3 documentation. [online] Available at:
+                https://getbootstrap.com/docs/5.3/getting-started/introduction/ [Accessed 17 November 2026].
+*@
+@using Microsoft.AspNetCore.Mvc.Rendering
+@model EventFormViewModel
+@{
+    ViewData["Title"] = Model.IsEdit ? "Edit event" : "Create an event";
+    var formAction = Model.IsEdit ? "Edit" : "Create";
+    var routeId = Model.IsEdit ? Model.EventID.ToString() : null;
+    var venueItems = Model.Venues.Select(v => new SelectListItem(v.Name + " (" + v.City + ")", v.VenueID.ToString())).ToList();
+}
+
+<div class="rd-page-header">
+    <div class="container">
+        <h1>@ViewData["Title"]</h1>
+        <p>@(Model.IsEdit ? "Change the details below and save." : "Fill in the details of your event.")</p>
+    </div>
+</div>
+
+<div class="container rd-section">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="rd-form-card">
+
+                @if (!Model.Venues.Any())
+                {
+                    <div class="alert alert-info">
+                        There are no venues yet. <a asp-controller="OrganizerVenues" asp-action="Index">Add a venue first</a>, then come back.
+                    </div>
+                }
+
+                <form asp-action="@formAction" asp-route-id="@routeId" method="post" enctype="multipart/form-data">
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                    <div class="mb-3">
+                        <label asp-for="Name" class="form-label"></label>
+                        <input asp-for="Name" class="form-control" />
+                        <span asp-validation-for="Name" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Description" class="form-label"></label>
+                        <textarea asp-for="Description" class="form-control" rows="3"></textarea>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="EventDate" class="form-label">Event date</label>
+                            <input id="EventDate" name="EventDate" type="date" class="form-control"
+                                   value="@(Model.EventDate?.ToString("yyyy-MM-dd"))" />
+                            <span asp-validation-for="EventDate" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Distance" class="form-label"></label>
+                            <input asp-for="Distance" type="number" step="any" min="0" class="form-control" />
+                            <span asp-validation-for="Distance" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="EventType" class="form-label"></label>
+                            <select asp-for="EventType" class="form-select">
+                                <option value="">Choose a type...</option>
+                                <option value="Run">Run</option>
+                                <option value="Walk">Walk</option>
+                                <option value="Cycle">Cycle</option>
+                            </select>
+                            <span asp-validation-for="EventType" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="VenueID" class="form-label"></label>
+                            <select asp-for="VenueID" class="form-select" asp-items="venueItems">
+                                <option value="0">Choose a venue...</option>
+                            </select>
+                            <span asp-validation-for="VenueID" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="BannerFile" class="form-label">Banner picture (optional)</label>
+                        @if (!string.IsNullOrEmpty(Model.BannerImageUrl))
+                        {
+                            <div class="mb-2">
+                                <img src="@Model.BannerImageUrl" alt="Current banner" class="rd-banner-preview" />
+                                <div class="form-text">Current banner. Choose a new file below to replace it.</div>
+                            </div>
+                        }
+                        <input id="BannerFile" name="BannerFile" type="file" class="form-control" accept="image/jpeg,image/png,image/webp" />
+                        <div class="form-text">JPEG, PNG or WebP, up to 2 MB.</div>
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary">@(Model.IsEdit ? "Save changes" : "Create event")</button>
+                        <a class="btn btn-outline-primary" asp-action="Index">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
