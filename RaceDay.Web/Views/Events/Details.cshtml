@@ -1,0 +1,109 @@
+@*
+   Student:     Mandlakazi Sibiya (ST10473547)
+   Module:      PROG6212 Programming 2B - PoE Part 3
+   Institution: The Independent Institute of Education (IIE)
+   Date:        17 November 2026
+   AI use:      Claude (Anthropic) helped draft and explain this file. Reviewed and understood by the student.
+   References:  Bootstrap, n.d. Bootstrap 5.3 documentation. [online] Available at:
+                https://getbootstrap.com/docs/5.3/getting-started/introduction/ [Accessed 17 November 2026].
+*@
+@model EventDetailsViewModel
+@{
+    ViewData["Title"] = Model.Event.Name;
+    var typeClass = "type-" + Model.Event.EventType.ToLowerInvariant();
+}
+
+<div class="rd-page-header">
+    <div class="container">
+        <span class="type-pill @typeClass">@Model.Event.EventType</span>
+        <h1 class="mt-2">@Model.Event.Name</h1>
+        <p>@Model.Event.EventDate.ToString("dddd, dd MMMM yyyy") | @Model.Event.Venue.Name, @Model.Event.Venue.City</p>
+    </div>
+</div>
+
+<div class="container rd-section">
+    <div class="row g-4">
+        <div class="col-lg-7">
+            @if (!string.IsNullOrEmpty(Model.Event.BannerImageUrl))
+            {
+                <img src="@Model.Event.BannerImageUrl" alt="Banner for @Model.Event.Name" class="rd-detail-banner mb-4" />
+            }
+
+            <h2 class="h4">About this event</h2>
+            <p>@(string.IsNullOrWhiteSpace(Model.Event.Description) ? "No description yet." : Model.Event.Description)</p>
+
+            <ul class="list-unstyled rd-facts">
+                <li><strong>Distance:</strong> @Model.Event.Distance.ToString("0.##") km</li>
+                <li><strong>Venue:</strong> @Model.Event.Venue.Name, @Model.Event.Venue.Address, @Model.Event.Venue.City</li>
+                <li><strong>Organizer:</strong> @Model.Event.OrganizerName</li>
+            </ul>
+
+            <h2 class="h4 mt-4">Categories</h2>
+            @if (!Model.Event.Categories.Any())
+            {
+                <p class="text-muted">The organizer has not added categories yet.</p>
+            }
+            else
+            {
+                <ul class="list-group rd-category-list">
+                    @foreach (var category in Model.Event.Categories)
+                    {
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <strong>@category.CategoryName</strong>
+                            <span class="text-muted">@category.Summary</span>
+                        </li>
+                    }
+                </ul>
+            }
+        </div>
+
+        <div class="col-lg-5">
+            <div class="rd-form-card">
+                <h2 class="h4">Enter this event</h2>
+
+                @if (User.Identity?.IsAuthenticated != true)
+                {
+                    <p class="text-muted">Log in or create an account to enter.</p>
+                    <a class="btn btn-primary me-2" asp-controller="Account" asp-action="Login"
+                       asp-route-returnUrl="@Context.Request.Path">Log in</a>
+                    <a class="btn btn-outline-primary" asp-controller="Account" asp-action="Register">Join RaceDay</a>
+                }
+                else if (Model.IsOrganizer)
+                {
+                    <p class="text-muted mb-0">Organizers cannot enter events. Log in as a Participant to enter.</p>
+                }
+                else if (Model.MyEnrollment is not null)
+                {
+                    <p>You are entered in the <strong>@Model.MyEnrollment.CategoryName</strong> category.</p>
+                    <p class="mb-2">Status: <partial name="_StatusBadge" model="Model.MyEnrollment.Status" /></p>
+                    <a class="btn btn-outline-primary btn-sm" asp-controller="Participant" asp-action="MyEvents">See my events</a>
+                }
+                else if (Model.IsPast)
+                {
+                    <p class="text-muted mb-0">This event has already taken place.</p>
+                }
+                else if (!Model.Event.Categories.Any())
+                {
+                    <p class="text-muted mb-0">You can enter once the organizer adds a category.</p>
+                }
+                else
+                {
+                    <form asp-controller="Events" asp-action="Enrol" asp-route-id="@Model.Event.EventID" method="post">
+                        <p class="text-muted">Choose the category you want to run in.</p>
+                        @foreach (var category in Model.Event.Categories)
+                        {
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="radio" name="categoryId" id="category@(category.CategoryID)"
+                                       value="@category.CategoryID" required />
+                                <label class="form-check-label" for="category@(category.CategoryID)">
+                                    <strong>@category.CategoryName</strong> <span class="text-muted">| @category.Summary</span>
+                                </label>
+                            </div>
+                        }
+                        <button type="submit" class="btn btn-primary w-100 mt-3">Enter this event</button>
+                    </form>
+                }
+            </div>
+        </div>
+    </div>
+</div>
