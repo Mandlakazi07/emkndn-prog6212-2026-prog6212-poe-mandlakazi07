@@ -1,0 +1,22 @@
+@*
+   Student:     Mandlakazi Sibiya (ST10473547)
+   Module:      PROG6212 Programming 2B - PoE Part 3
+   Institution: The Independent Institute of Education (IIE)
+   Date:        3 November 2026
+   AI use:      Claude (Anthropic) helped draft and explain this file. Reviewed and understood by the student.
+   References:  Bootstrap, n.d. Bootstrap 5.3 documentation. [online] Available at:
+                https://getbootstrap.com/docs/5.3/getting-started/introduction/ [Accessed 3 November 2026].
+*@
+@* A colour-coded enrollment status: green = Confirmed, amber = Pending, red = Cancelled.
+   Use it anywhere with: <partial name="_StatusBadge" model="enrollment.Status" /> *@
+@model string
+@{
+    var css = Model switch
+    {
+        "Confirmed" => "status-confirmed",
+        "Pending" => "status-pending",
+        "Cancelled" => "status-cancelled",
+        _ => "status-unknown"
+    };
+}
+<span class="status-badge @css">@Model</span>
