@@ -11,7 +11,9 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using RaceDay.Api.Data;
+using RaceDay.Api.Services;
 
 namespace RaceDay.Tests.TestSupport;
 
@@ -41,6 +43,10 @@ public class RaceDayFactory : WebApplicationFactory<AppDbContext>
 
             // Register the in-memory database instead
             services.AddDbContext<AppDbContext>(options => options.UseInMemoryDatabase(_databaseName));
+
+            // Replace Azure Blob Storage with a fake, so tests never need Azure
+            services.RemoveAll<IImageStorage>();
+            services.AddSingleton<IImageStorage, FakeImageStorage>();
         });
     }
 }
