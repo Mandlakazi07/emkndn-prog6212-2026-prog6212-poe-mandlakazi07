@@ -1,15 +1,15 @@
-﻿# RaceDay - Race Event Management API (Part 2)
+﻿# RaceDay - Race Event Management API PoE
 
 - **Student:** Mandlakazi Sibiya
 - **Student number:** ST10473547
 - **Module:** PROG6212 - Programming 2B
-- **Assessment:** Portfolio of Evidence (PoE), Part 2 - RESTful API
+- **Assessment:** Portfolio of Evidence (PoE), Part 3 - Web Application
 - **Institution:** The Independent Institute of Education (IIE)
-- **Branch:** `part2` (Part 1 is on `main`)
+- **Branch:** `part 3` (Part 1 is on `main`)
 
 ## 1. Overview
 
-RaceDay is a web-based event management system for the South African road running, walking and cycling community. Part 2 is the RESTful API that powers the whole system: it stores events, categories, enrollments and results in SQL Server, enforces who is allowed to do what, and is fully tested. It follows the endpoint plan, ERD and SQL script submitted in Part 1.
+RaceDay is a web-based event management system for the South African road running, walking and cycling community. Part 3 is the  Web Application + RESTful API that powers the whole system: it stores events, categories, enrollments and results in SQL Server, enforces who is allowed to do what, and is fully tested. It follows the endpoint plan, ERD and SQL script submitted in Part 1.
 
 There are two roles:
 
@@ -123,7 +123,7 @@ Run all tests with `dotnet test`. The tests follow the module's unit testing gui
 
 The workflow `.github/workflows/ci.yml` runs on every push. It restores packages, builds the whole solution, and runs all tests on a clean GitHub server.
 
-![Green CI run](docs/part2/ci-green-run.png)
+![GreenCIrun3 ](docs/part2/ci-green-run.png)
 
 ![All unit tests passing in CI](docs/part2/ci-test-passed.png)
 
