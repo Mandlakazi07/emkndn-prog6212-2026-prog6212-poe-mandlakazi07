@@ -1,0 +1,66 @@
+@*
+   Student:     Mandlakazi Sibiya (ST10473547)
+   Module:      PROG6212 Programming 2B - PoE Part 3
+   Institution: The Independent Institute of Education (IIE)
+   Date:        17 November 2026
+   AI use:      Claude (Anthropic) helped draft and explain this file. Reviewed and understood by the student.
+   References:  Microsoft Learn, n.d. Model validation in ASP.NET Core MVC and Razor Pages. [online] Available at:
+                https://learn.microsoft.com/aspnet/core/mvc/models/validation [Accessed 17 November 2026].
+                Bootstrap, n.d. Bootstrap 5.3 documentation. [online] Available at:
+                https://getbootstrap.com/docs/5.3/getting-started/introduction/ [Accessed 17 November 2026].
+*@
+@model CategoryFormViewModel
+@{
+    ViewData["Title"] = "Edit category";
+}
+
+<div class="rd-page-header">
+    <div class="container">
+        <h1>Edit category</h1>
+        <p>@ViewData["EventName"]</p>
+    </div>
+</div>
+
+<div class="container rd-section">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="rd-form-card">
+                <form asp-action="Edit" asp-route-eventId="@Model.EventID" asp-route-id="@Model.CategoryID" method="post">
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                    <div class="mb-3">
+                        <label asp-for="CategoryName" class="form-label"></label>
+                        <input asp-for="CategoryName" class="form-control" />
+                        <span asp-validation-for="CategoryName" class="text-danger"></span>
+                    </div>
+                    <div class="row">
+                        <div class="col-6 mb-3">
+                            <label asp-for="MinAge" class="form-label"></label>
+                            <input asp-for="MinAge" type="number" min="0" max="120" class="form-control" />
+                            <span asp-validation-for="MinAge" class="text-danger"></span>
+                        </div>
+                        <div class="col-6 mb-3">
+                            <label asp-for="MaxAge" class="form-label"></label>
+                            <input asp-for="MaxAge" type="number" min="0" max="120" class="form-control" />
+                            <span asp-validation-for="MaxAge" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <label asp-for="DistanceKm" class="form-label"></label>
+                        <input asp-for="DistanceKm" type="number" step="any" min="0" class="form-control" />
+                        <span asp-validation-for="DistanceKm" class="text-danger"></span>
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary">Save changes</button>
+                        <a class="btn btn-outline-primary" asp-action="Index" asp-route-eventId="@Model.EventID">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
