@@ -29,6 +29,10 @@ public class User
 
     public DateTime CreatedAt { get; set; }
 
+    // Public URL of the profile picture in Azure Blob Storage
+    [MaxLength(500)]
+    public string? ProfilePictureUrl { get; set; }
+
     // "Many" side of the relationships: one user organizes many events, submits many enrollments
     public ICollection<Event> OrganizedEvents { get; set; } = new List<Event>();
     public ICollection<Enrollment> Enrollments { get; set; } = new List<Enrollment>();

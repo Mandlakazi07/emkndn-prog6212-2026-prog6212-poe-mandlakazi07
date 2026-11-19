@@ -33,6 +33,10 @@ public class Event
     [Required, MaxLength(20)]
     public string EventType { get; set; } = string.Empty;
 
+    // Public URL of the event banner image in Azure Blob Storage
+    [MaxLength(500)]
+    public string? BannerImageUrl { get; set; }
+
     // Navigation properties
     public User Organizer { get; set; } = null!;
     public Venue Venue { get; set; } = null!;
