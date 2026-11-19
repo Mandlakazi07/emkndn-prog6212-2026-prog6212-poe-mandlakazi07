@@ -1,0 +1,67 @@
+@*
+   Student:     Mandlakazi Sibiya (ST10473547)
+   Module:      PROG6212 Programming 2B - PoE Part 3
+   Institution: The Independent Institute of Education (IIE)
+   Date:        3 November 2026
+   AI use:      Claude (Anthropic) helped draft and explain this file. Reviewed and understood by the student.
+   References:  Bootstrap, n.d. Bootstrap 5.3 documentation. [online] Available at:
+                https://getbootstrap.com/docs/5.3/getting-started/introduction/ [Accessed 3 November 2026].
+*@
+@model HomeViewModel
+@{
+    ViewData["Title"] = "Home";
+}
+
+<section class="rd-hero">
+    <div class="container">
+        <p class="rd-eyebrow">South African road events</p>
+        <h1>Race day starts here.</h1>
+        <p class="lead">Find your next run, walk or ride. Enter in a minute, and keep every finish.</p>
+
+        @if (User.Identity?.IsAuthenticated != true)
+        {
+            <a class="btn btn-primary btn-lg me-2" asp-controller="Account" asp-action="Register">Join RaceDay</a>
+            <a class="btn btn-outline-light btn-lg" asp-controller="Account" asp-action="Login">Log in</a>
+        }
+    </div>
+</section>
+
+<section class="container rd-section">
+    <h2 class="rd-section-title">Upcoming events</h2>
+
+    @if (Model.ErrorMessage is not null)
+    {
+        <div class="alert alert-warning">@Model.ErrorMessage</div>
+    }
+    else if (!Model.Events.Any())
+    {
+        <p class="text-muted">No upcoming events yet. Check back soon.</p>
+    }
+    else
+    {
+        <div class="row g-4">
+            @foreach (var ev in Model.Events)
+            {
+                var typeClass = "type-" + ev.EventType.ToLowerInvariant();
+                <div class="col-md-6 col-lg-4">
+                    <article class="card rd-card h-100">
+                        @if (!string.IsNullOrEmpty(ev.BannerImageUrl))
+                        {
+                            <img src="@ev.BannerImageUrl" class="rd-card-img" alt="Banner for @ev.Name" />
+                        }
+                        else
+                        {
+                            <div class="rd-card-img rd-card-img-placeholder"><span>@ev.EventType</span></div>
+                        }
+                        <div class="card-body">
+                            <span class="type-pill @typeClass">@ev.EventType</span>
+                            <h3 class="rd-card-title">@ev.Name</h3>
+                            <p class="rd-meta">@ev.EventDate.ToString("dd MMM yyyy") | @ev.Venue.City</p>
+                            <p class="rd-meta">@ev.Distance.ToString("0.##") km</p>
+                        </div>
+                    </article>
+                </div>
+            }
+        </div>
+    }
+</section>
