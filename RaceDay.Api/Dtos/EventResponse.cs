@@ -17,6 +17,7 @@ public class EventResponse
     public DateOnly EventDate { get; set; }
     public decimal Distance { get; set; }
     public string EventType { get; set; } = string.Empty;
+    public string? BannerImageUrl { get; set; }
     public int OrganizerID { get; set; }
     public string OrganizerName { get; set; } = string.Empty;
     public VenueResponse Venue { get; set; } = new();
