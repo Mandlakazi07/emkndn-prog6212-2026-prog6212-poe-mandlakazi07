@@ -1,7 +1,7 @@
 // Student:     Mandlakazi Sibiya (ST10473547)
 // Module:      PROG6212 Programming 2B - PoE Part 3
 // Institution: The Independent Institute of Education (IIE)
-// Date:        3 November 2026
+// Date:        17 November 2026
 // AI use:      Claude (Anthropic) helped draft and explain this file. Reviewed and understood by the student.
 // References:  Microsoft Learn, n.d. Use cookie authentication without ASP.NET Core Identity. [online] Available at:
 //              https://learn.microsoft.com/aspnet/core/security/authentication/cookie [Accessed 3 November 2026].
@@ -10,10 +10,16 @@
 //              Adnan, Y., n.d. Authentication_API_With_UnitTesting. [online] GitHub. Available at:
 //              https://github.com/YusraAdnan/Authentication_API_With_UnitTesting [Accessed 3 November 2026].
 
+using System.Globalization;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using RaceDay.Web.Services;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Numbers and dates always use a dot and the year-month-day order, whatever language Windows is set to.
+// Without this, a South African (comma decimal) computer cannot read 10.5 sent by a browser number box.
+CultureInfo.DefaultThreadCurrentCulture = CultureInfo.InvariantCulture;
+CultureInfo.DefaultThreadCurrentUICulture = CultureInfo.InvariantCulture;
 
 builder.Services.AddControllersWithViews();
 
