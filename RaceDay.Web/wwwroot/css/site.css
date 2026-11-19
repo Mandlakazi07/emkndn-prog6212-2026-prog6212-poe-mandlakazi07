@@ -2,7 +2,7 @@
    Student:     Mandlakazi Sibiya (ST10473547)
    Module:      PROG6212 Programming 2B - PoE Part 3
    Institution: The Independent Institute of Education (IIE)
-   Date:        3 November 2026
+   Date:        17 November 2026
    AI use:      Claude (Anthropic) helped draft and explain this file. Reviewed and understood by the student.
    References:  Bootstrap, n.d. Bootstrap 5.3 documentation. [online] Available at:
                 https://getbootstrap.com/docs/5.3/getting-started/introduction/ [Accessed 3 November 2026].
@@ -193,3 +193,45 @@ a { color: var(--rd-orange-dark); }
 .rd-footer { background: var(--rd-navy); color: rgba(255, 255, 255, 0.8); padding: 1.4rem 0; font-size: 0.9rem; }
 .rd-footer .container { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0.5rem; }
 .rd-footer-note { color: rgba(255, 255, 255, 0.55); }
+
+/* ---------- Added in Pack 3: Organizer pages ---------- */
+.rd-page-header { background: var(--rd-navy); color: #fff; padding: 2rem 0 1.6rem; }
+.rd-page-header h1 { color: #fff; margin: 0; font-size: clamp(1.6rem, 4vw, 2.2rem); }
+.rd-page-header p { color: rgba(255, 255, 255, 0.75); margin: 0.4rem 0 0; }
+
+.rd-stat {
+  background: #fff;
+  border-radius: var(--rd-radius);
+  padding: 1.2rem 1.3rem;
+  box-shadow: 0 4px 18px rgba(11, 31, 58, 0.09);
+  border-left: 5px solid var(--rd-orange);
+  display: flex;
+  flex-direction: column;
+}
+.rd-stat-number { font-size: 2.2rem; font-weight: 900; color: var(--rd-navy); line-height: 1; }
+.rd-stat-label { color: var(--rd-muted); font-size: 0.9rem; margin-top: 0.3rem; }
+
+.rd-table-card {
+  background: #fff;
+  border-radius: var(--rd-radius);
+  box-shadow: 0 4px 18px rgba(11, 31, 58, 0.09);
+  overflow: hidden;
+}
+.rd-table-card .table { --bs-table-bg: transparent; }
+.rd-table-card .table thead th { background: var(--rd-navy); color: #fff; border: 0; white-space: nowrap; }
+
+.rd-upcoming li { display: flex; gap: 0.9rem; align-items: center; margin-bottom: 0.9rem; }
+.rd-upcoming-date {
+  flex: 0 0 4.2rem;
+  text-align: center;
+  background: var(--rd-orange);
+  color: #fff;
+  font-weight: 800;
+  border-radius: 10px;
+  padding: 0.5rem 0.2rem;
+  font-size: 0.9rem;
+}
+
+.rd-banner-preview { max-width: 100%; max-height: 160px; border-radius: 10px; object-fit: cover; }
+.rd-input-time { max-width: 8rem; }
+.rd-input-position { max-width: 7rem; }
