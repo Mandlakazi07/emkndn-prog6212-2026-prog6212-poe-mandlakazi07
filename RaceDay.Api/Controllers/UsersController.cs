@@ -33,7 +33,8 @@ public class UsersController : ControllerBase
         FullName = user.FullName,
         Email = user.Email,
         Role = user.Role,
-        CreatedAt = user.CreatedAt
+        CreatedAt = user.CreatedAt,
+        ProfilePictureUrl = user.ProfilePictureUrl
     };
 
     /// <summary>Returns the logged-in user's own profile.</summary>
