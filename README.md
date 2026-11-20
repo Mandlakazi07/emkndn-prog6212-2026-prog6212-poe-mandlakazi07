@@ -1,4 +1,4 @@
-# RaceDay - Race Event Management System (Part 3: Web Application)
+﻿# RaceDay - Race Event Management System (Part 3: Web Application)
 
 - **Student:** Mandlakazi Sibiya
 - **Student number:** ST10473547
@@ -146,7 +146,7 @@ recording results, uploading pictures, and trying protected pages while logged o
 The workflow `.github/workflows/ci.yml` runs on every push. It restores packages, builds the whole solution including the MVC web project,
 runs all the tests, and builds the Docker image.
 
-![Green CI run](docs/part3/ci-green-run.png)
+![Green CI run](docs/part3/GreenCIrun3.png)
 
 ![All tests passing in CI](docs/part3/ci-tests-passed.png)
 
@@ -191,3 +191,4 @@ Microsoft Learn, n.d. *Tutorial: Containerize a .NET app*. [online] Available at
 Microsoft Learn, n.d. *Upload files in ASP.NET Core*. [online] Available at: https://learn.microsoft.com/aspnet/core/mvc/models/file-uploads [Accessed 19 November 2026].
 
 Microsoft Learn, n.d. *Use cookie authentication without ASP.NET Core Identity*. [online] Available at: https://learn.microsoft.com/aspnet/core/security/authentication/cookie [Accessed 19 November 2026].
+
