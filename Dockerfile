@@ -21,7 +21,7 @@ RUN dotnet restore "RaceDay.Web.csproj"
 
 # Now copy the rest of the code and publish a Release version
 COPY . ./
-RUN dotnet publish "RaceDay.Web.csproj" RaceDay.Web.csproj -c Release -o /app/publish --no-restore
+RUN dotnet publish "RaceDay.Web.csproj" -c Release -o /app/publish --no-restore
 
 # ---------- Stage 2: run ----------
 FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS final
@@ -37,4 +37,5 @@ COPY --from=build /app/publish ./
 USER $APP_UID
 
 ENTRYPOINT ["dotnet", "RaceDay.Web.dll"]
+
 
