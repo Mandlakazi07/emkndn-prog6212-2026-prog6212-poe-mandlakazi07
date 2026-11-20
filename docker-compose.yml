@@ -1,0 +1,28 @@
+# Student:     Mandlakazi Sibiya (ST10473547)
+# Module:      PROG6212 Programming 2B - PoE Part 3
+# Institution: The Independent Institute of Education (IIE)
+# Date:        19 November 2026
+# AI use:      Claude (Anthropic) helped draft and explain this file. Reviewed and understood by the student.
+# Reference:   Microsoft Learn, n.d. Tutorial: Containerize a .NET app. [online] Available at:
+#              https://learn.microsoft.com/dotnet/core/docker/build-container [Accessed 19 November 2026].
+
+# One command starts the web app:   docker compose up --build
+# Then open http://localhost:8080
+#
+# The API is NOT in a container: it uses SQL Server Express on this computer with Windows login,
+# which a Linux container cannot use. The web app (in the container) calls the API on the host computer.
+# Start the API first:  dotnet run --project RaceDay.Api --urls "http://0.0.0.0:5159"
+
+services:
+  web:
+    build:
+      context: ./RaceDay.Web
+    image: raceday-web
+    ports:
+      - "8080:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      # "host.docker.internal" means "the computer Docker is running on"
+      - Api__BaseUrl=http://host.docker.internal:5159/
+    extra_hosts:
+      - "host.docker.internal:host-gateway"

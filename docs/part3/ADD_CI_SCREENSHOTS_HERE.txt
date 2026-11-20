@@ -1,0 +1,3 @@
+Put your two CI screenshots in this folder:
+  ci-green-run.png     (the Actions tab showing the green run on the part3 branch)
+  ci-tests-passed.png  (the expanded "Run all unit tests" step ending with the passed count)

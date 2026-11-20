@@ -1,10 +1,10 @@
-﻿# Student:     Mandlakazi Sibiya (ST10473547)
-# Module:      PROG6212 Programming 2B - PoE Part 2
+# Student:     Mandlakazi Sibiya (ST10473547)
+# Module:      PROG6212 Programming 2B - PoE Part 3
 # Institution: The Independent Institute of Education (IIE)
-# Date:        17 October 2026
+# Date:        19 November 2026
 # AI use:      Claude (Anthropic) helped draft and explain this file. Reviewed and understood by the student.
 # Reference:   GitHub Docs, n.d. Building and testing .NET. [online] Available at:
-#              https://docs.github.com/en/actions/tutorials/build-and-test-code/net [Accessed 17 October 2026].
+#              https://docs.github.com/en/actions/tutorials/build-and-test-code/net [Accessed 19 November 2026].
 
 name: Build and Test
 
@@ -18,7 +18,7 @@ on:
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
 
     steps:
       - name: Checkout repository
@@ -32,8 +32,14 @@ jobs:
       - name: Restore dependencies
         run: dotnet restore RaceDay.slnx
 
-      - name: Build the API and the tests
+      - name: Build the whole solution (API, tests and MVC web app)
         run: dotnet build RaceDay.slnx --configuration Release --no-restore
+
+      - name: Build the MVC web project
+        run: dotnet build RaceDay.Web/RaceDay.Web.csproj --configuration Release --no-restore
 
       - name: Run all unit tests
         run: dotnet test RaceDay.slnx --configuration Release --no-build --verbosity normal
+
+      - name: Build the Docker image for the web app
+        run: docker build -t raceday-web ./RaceDay.Web
