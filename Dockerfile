@@ -1,4 +1,4 @@
-# Student:     Mandlakazi Sibiya (ST10473547)
+﻿# Student:     Mandlakazi Sibiya (ST10473547)
 # Module:      PROG6212 Programming 2B - PoE Part 3
 # Institution: The Independent Institute of Education (IIE)
 # Date:        19 November 2026
@@ -16,12 +16,12 @@ WORKDIR /src
 
 # Copy only the project file first and restore the packages.
 # Docker remembers this step, so a rebuild after a code change does not download everything again.
-COPY RaceDay.Web.csproj ./
-RUN dotnet restore
+COPY ["RaceDay.Web/RaceDay.Web.csproj", "./"]
+RUN dotnet restore "RaceDay.Web.csproj"
 
 # Now copy the rest of the code and publish a Release version
 COPY . ./
-RUN dotnet publish RaceDay.Web.csproj -c Release -o /app/publish --no-restore
+RUN dotnet publish "RaceDay.Web.csproj" RaceDay.Web.csproj -c Release -o /app/publish --no-restore
 
 # ---------- Stage 2: run ----------
 FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS final
@@ -37,3 +37,4 @@ COPY --from=build /app/publish ./
 USER $APP_UID
 
 ENTRYPOINT ["dotnet", "RaceDay.Web.dll"]
+
